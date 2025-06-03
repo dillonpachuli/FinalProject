@@ -217,12 +217,18 @@ class ScoringScreen(ctk.CTkFrame):
             self.time_left = 5
             self.update_timer()
         else:
-            scored_items = [
-                ScoredMenuItem(item.name, item.price, item.category, self.scores.get(item.name, 0))
-                for item in self.items if self.scores.get(item.name, 0) > 0
-            ]
+            scored_items = []
+            for item in self.items:
+                score = self.scores.get(item.name, 0)
+                if score > 0:
+                    scored_items.append(ScoredMenuItem(item.name, item.price, item.category, score))
+
+            # Limit to top 20 items by score to avoid combinatorial explosion
+            scored_items.sort(key=lambda x: x.score, reverse=True)
+            scored_items = scored_items[:20]
+
             self.controller.frames[ResultScreen].set_results(scored_items)
-            self.controller.show_frame(ResultScreen)
+            self.controller.show_frame(ResultScreen) 
 
     def update_timer(self):
         self.timer_label.configure(text=f"Time left to rate: {self.time_left} seconds")
