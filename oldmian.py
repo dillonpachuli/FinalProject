@@ -1,10 +1,6 @@
-import customtkinter as ctk
+import tkinter as tk
 from tkinter import messagebox
 from itertools import combinations
-
-# Configure appearance
-ctk.set_appearance_mode("System")  # Options: "Light", "Dark", "System"
-ctk.set_default_color_theme("blue")  # Other options: "green", "dark-blue"
 
 class MenuItem:
     def __init__(self, name, price):
@@ -83,46 +79,42 @@ def calculate():
 
     best_combo = find_best_combo(scored_items, budget)
 
-    output.configure(state="normal")
-    output.delete("1.0", "end")
+    output.delete("1.0", tk.END)
     if best_combo:
-        output.insert("end", "Best Combo:\n")
+        output.insert(tk.END, "Best Combo:\n")
         for item in best_combo:
-            output.insert("end", f"{item.name} - ${item.price:.2f} | Score: {item.score}\n")
+            output.insert(tk.END, f"{item.name} - ${item.price:.2f} | Score: {item.score}\n")
         total_price = sum(i.price for i in best_combo)
         total_score = sum(i.score for i in best_combo)
-        output.insert("end", f"\nTotal Price: ${total_price:.2f}\nTotal Score: {total_score}")
+        output.insert(tk.END, f"\nTotal Price: ${total_price:.2f}\nTotal Score: {total_score}")
     else:
-        output.insert("end", "No valid combo under your budget.")
-    output.configure(state="disabled")
+        output.insert(tk.END, "No valid combo under your budget.")
 
-# ----- CustomTkinter UI -----
-root = ctk.CTk()
+# ----- Tkinter UI -----
+root = tk.Tk()
 root.title("McDonald's Combo Optimizer")
-root.geometry("700x750")
 
-ctk.CTkLabel(root, text="Enter your budget ($):", font=ctk.CTkFont(size=16)).pack(pady=5)
-budget_entry = ctk.CTkEntry(root)
-budget_entry.pack(pady=5)
+tk.Label(root, text="Enter your budget ($):").pack()
+budget_entry = tk.Entry(root)
+budget_entry.pack()
 
-scroll_frame = ctk.CTkScrollableFrame(root, width=680, height=400)
-scroll_frame.pack(pady=10)
+frame = tk.Frame(root)
+frame.pack()
 
 score_entries = []
 
 for item in menu_items:
-    row = ctk.CTkFrame(scroll_frame)
-    row.pack(fill="x", pady=2)
-    ctk.CTkLabel(row, text=f"{item.name} - ${item.price:.2f}", width=400, anchor='w').pack(side="left", padx=10)
-    ctk.CTkLabel(row, text="Score (0–10):").pack(side="left")
-    score_entry = ctk.CTkEntry(row, width=50)
+    row = tk.Frame(frame)
+    row.pack(anchor='w')
+    tk.Label(row, text=f"{item.name} - ${item.price:.2f}", width=40, anchor='w').pack(side='left')
+    tk.Label(row, text="Score (0–10):").pack(side='left')
+    score_entry = tk.Entry(row, width=5)
     score_entries.append(score_entry)
-    score_entry.pack(side="left", padx=5)
+    score_entry.pack(side='left')
 
-ctk.CTkButton(root, text="Find Best Combo", command=calculate).pack(pady=15)
+tk.Button(root, text="Find Best Combo", command=calculate).pack(pady=10)
 
-output = ctk.CTkTextbox(root, height=200, width=680)
+output = tk.Text(root, height=12, width=60)
 output.pack()
-output.configure(state="disabled")
 
 root.mainloop()
